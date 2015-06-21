@@ -12,16 +12,31 @@
 				flex-direction: column;
 			}
 
+			@keyframes newTicket{
+				from{
+					transform: scale(0);
+				},
+				to{
+					transform: scale(1);
+				}
+			}
+
 			div.ticketEntry{
 				min-height: 40px;
 				padding: 4px;
 				text-align: center;
 
 				display: flex;
+
+				animation: newTicket 0.2s;
 			}
 
 			div.ticketEntry.even{
 				background: lightgray;
+			}
+
+			div.ticketEntry.odd{
+				background: white;
 			}
 
 			div.status{
