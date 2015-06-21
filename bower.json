@@ -1,0 +1,24 @@
+{
+  "name": "tickets-viewer",
+  "version": "0.8.0",
+  "homepage": "https://github.com/partnering/tickets-viewer",
+  "authors": [
+    "Sylvain Mahe <sylv.mahe@gmail.com>"
+  ],
+  "description": "Polymer WebComponent for viewing tickets created by or assigned to DiyaOne",
+  "main": "tickets-viewer.html",
+  "license": "LGPL v3.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "diya-sdk": "partnering/diya-sdk",
+    "polymer": "Polymer/polymer#0.5",
+    "paper-fab": "Polymer/paper-fab#0.5",
+    "core-icon": "Polymer/core-icon#0.5"
+  }
+}
