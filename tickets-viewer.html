@@ -124,7 +124,7 @@
 
 		<template repeat="{{ticket, i in tickets}}">
 			<div class="ticketEntry {{i%2 === 0 ? 'even' : 'odd'}}">
-				<div class="type"><img src="types/{{ticket.type}}.png" /></div>
+				<div class="type"><img src="{{path}}/types/{{ticket.type}}.png" /></div>
 				<div class="status"><p class="{{ticket.status}}">{{ticket.status}}</p></div>
 				<div class="description">
 					<p class="description">{{ticket.description}}</p>
@@ -165,6 +165,7 @@
 		Polymer({
 			ready: function(){
 				this.tickets = [];
+				this.path = this.resolvePath(".");
 			},
 
 			addTicket: function(ticket){
