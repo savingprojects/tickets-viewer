@@ -3,7 +3,7 @@
 <link rel="import" href="../paper-fab/paper-fab.html">
 
 
-<polymer-element name="tickets-viewer" attributes="selector">
+<polymer-element name="tickets-viewer" attributes="selector limit icon">
 	<template>
 
 		<style>
@@ -124,7 +124,14 @@
 
 		<template repeat="{{ticket, i in tickets}}">
 			<div class="ticketEntry {{i%2 === 0 ? 'even' : 'odd'}}">
-				<div class="type"><img src="{{path}}/types/{{ticket.type}}.png" /></div>
+				<div class="type">
+					<template if="{{icon}}">
+						<img src="{{icon}}" />
+					</template>
+					<template if="{{!icon}}">
+						<img src="{{path}}/types/{{ticket.type}}.png" /></div>
+					</template>
+				</div>
 				<div class="status"><p class="{{ticket.status}}">{{ticket.status}}</p></div>
 				<div class="description">
 					<p class="description">{{ticket.description}}</p>
@@ -186,6 +193,11 @@
 				//otherwise add it
 				ticket.edit = false;
 				this.tickets.push(ticket);
+
+				// quick hack to limits ticket number
+				if (this.tickets.length > this.limit) {
+					this.tickets.shift();
+				}
 			},
 
 			removeTicket: function(ticket){
