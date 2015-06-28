@@ -81,6 +81,7 @@
 
 			div.description p{
 				margin: 3px;
+				text-overflow: ellipsis;
 			}
 
 			div.description p.description{
@@ -118,6 +119,13 @@
 				div.status span{
 					display: none;
 				}
+				div.status.edit, .edit{
+					display: none;
+				}
+				div.actions.edit{
+					flex: 1;
+				}
+
 			}
 
 		</style>
@@ -132,19 +140,20 @@
 						<img src="{{path}}/types/{{ticket.type}}.png" /></div>
 					</template>
 				</div>
-				<div class="status"><p class="{{ticket.status}}">{{ticket.status}}</p></div>
-				<div class="description">
+				<div class="status {{ticket.edit?'edit':''}}"><p class="{{ticket.status}}">{{frenchify(ticket.status)}}</p></div>
+				<div class="description {{ticket.edit?'edit':''}}">
 					<p class="description">{{ticket.description}}</p>
 					<p class="comment">{{ticket.comment}}</p>
 					<p class="details">#{{ticket.id}} : created by {{ticket.from}}{{ticket.assignedTo ? ', assigned to : '+ticket.assignedTo : ''}}</p>
 				</div>
-				<div class="actions">
+				<div class="actions {{ticket.edit?'edit':''}}">
 					<template if="{{ticket.status === 'unassigned'}}">
 						<template if="{{!ticket.edit}}">
 							<paper-fab mini icon="perm-identity" style="background: orange" ticket-id="{{i}}" on-tap="{{actionEditAssign}}"></paper-fab>
 						</template>
 						<template if="{{ticket.edit}}">
-							<paper-input label="assign to..."></paper-input>
+							<paper-input flex label="assign to..."></paper-input>
+							<paper-fab mini icon="clear" ticket-id="{{i}}" on-tap="{{actionCancelEdit}}"></paper-fab>
 							<paper-fab mini icon="arrow-forward" style="background: #0191C5" ticket-id="{{i}}" on-tap="{{actionAssign}}"></paper-fab>
 						</template>
 					</template>
@@ -153,7 +162,8 @@
 							<paper-fab mini icon="check" style="background: green" ticket-id="{{i}}" on-tap="{{actionEditClose}}"></paper-fab>
 						</template>
 						<template if="{{ticket.edit}}">
-							<paper-input label="comment..."></paper-input>
+							<paper-input flex label="comment..."></paper-input>
+							<paper-fab mini icon="clear" ticket-id="{{i}}" on-tap="{{actionCancelEdit}}"></paper-fab>
 							<paper-fab mini icon="arrow-forward" style="background: #0191C5" ticket-id="{{i}}" on-tap="{{actionClose}}"></paper-fab>
 						</template>
 					</template>
@@ -300,6 +310,12 @@
 				});
 			},
 
+			actionCancelEdit: function(evt){
+				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+				var ticket = this.tickets[ticketId];
+				if(ticket) ticket.edit = false;
+			},
+
 			actionDelete: function(evt){
 				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
 				var ticket = this.tickets[ticketId];
@@ -317,6 +333,14 @@
 					console.log(err);
 					console.log(data);
 				});
+			},
+
+			frenchify: function(status){
+				switch(status){
+					case "unassigned": return "ouvert";
+					case "assigned": return "assigné";
+					case "closed": return "fermé";
+				}
 			}
 
 		});
