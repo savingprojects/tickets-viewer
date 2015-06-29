@@ -63,7 +63,7 @@
 
 
 			div.status p.unassigned{
-				background: orange;
+				background: #ff7f2a;
 			}
 
 			div.status p.assigned{
@@ -71,7 +71,7 @@
 			}
 
 			div.status p.closed{
-				background: green;
+				background: rgb(1,145,19);
 			}
 
 			div.description{
@@ -149,7 +149,7 @@
 				<div class="actions {{ticket.edit?'edit':''}}">
 					<template if="{{ticket.status === 'unassigned'}}">
 						<template if="{{!ticket.edit}}">
-							<paper-fab mini icon="perm-identity" style="background: orange" ticket-id="{{i}}" on-tap="{{actionEditAssign}}"></paper-fab>
+							<paper-fab mini icon="perm-identity" style="background: #ff7f2a" ticket-id="{{i}}" on-tap="{{actionEditAssign}}"></paper-fab>
 						</template>
 						<template if="{{ticket.edit}}">
 							<paper-input flex label="assign to..."></paper-input>
@@ -159,7 +159,7 @@
 					</template>
 					<template if="{{ticket.status === 'assigned'}}">
 						<template if="{{!ticket.edit}}">
-							<paper-fab mini icon="check" style="background: green" ticket-id="{{i}}" on-tap="{{actionEditClose}}"></paper-fab>
+							<paper-fab mini icon="check" style="background: rgb(1,145,19)" ticket-id="{{i}}" on-tap="{{actionEditClose}}"></paper-fab>
 						</template>
 						<template if="{{ticket.edit}}">
 							<paper-input flex label="comment..."></paper-input>
