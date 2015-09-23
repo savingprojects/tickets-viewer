@@ -1,174 +1,169 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-fab/paper-fab.html">
 
 
-<polymer-element name="tickets-viewer" attributes="selector limit icon">
+<dom-module id="tickets-viewer">
+	<style>
+		:host{
+			display: flex;
+			flex-direction: column;
+		}
+
+		@keyframes newTicket{
+			from{
+				transform: scale(0);
+			},
+			to{
+				transform: scale(1);
+			}
+		}
+
+		div.ticketEntry{
+			min-height: 40px;
+			padding: 4px;
+			text-align: center;
+			display: flex;
+			animation: newTicket 0.2s;
+		}
+
+		div.ticketEntry.even{
+			background: lightgray;
+		}
+
+		div.ticketEntry.odd{
+			background: white;
+		}
+
+		div.status{
+			width: 100px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		div.status p{
+			padding-left: 8px;
+			padding-right: 8px;
+			border-radius: 5px;
+			color: white;
+		}
+
+		div.ticketEntry.even div.status p{
+			transform: rotate(1.5deg);
+		}
+
+		div.ticketEntry.odd div.status p{
+			transform: rotate(-1.5deg);
+		}
+
+
+		div.status p.unassigned{
+			background: #ff7f2a;
+		}
+
+		div.status p.assigned{
+			background: #0191C5;
+		}
+
+		div.status p.closed{
+			background: rgb(1,145,19);
+		}
+
+		div.description{
+			flex: 1;
+			text-align: left;
+		}
+
+		div.description p{
+			margin: 3px;
+			text-overflow: ellipsis;
+		}
+
+		div.description p.description{
+			font-weight: bold;
+		}
+
+		div.description p.comment{
+			font-size: 0.9em;
+			margin-left: 20px;
+		}
+
+		div.description p.details{
+			font-size: 0.8em;
+			color: #444;
+		}
+
+		div.type{
+			width: 60px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		div.type img{
+			height: 40px;
+		}
+
+		div.actions{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		@media screen and (orientation: portrait){
+			div.status span{
+				display: none;
+			}
+			div.status.edit, .edit{
+				display: none;
+			}
+			div.actions.edit{
+				flex: 1;
+			}
+		}
+	</style>
 	<template>
 
-		<style>
-			:host{
-				display: flex;
-				flex-direction: column;
-			}
-
-			@keyframes newTicket{
-				from{
-					transform: scale(0);
-				},
-				to{
-					transform: scale(1);
-				}
-			}
-
-			div.ticketEntry{
-				min-height: 40px;
-				padding: 4px;
-				text-align: center;
-
-				display: flex;
-
-				animation: newTicket 0.2s;
-			}
-
-			div.ticketEntry.even{
-				background: lightgray;
-			}
-
-			div.ticketEntry.odd{
-				background: white;
-			}
-
-			div.status{
-				width: 100px;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-
-			div.status p{
-				padding-left: 8px;
-				padding-right: 8px;
-				border-radius: 5px;
-				color: white;
-			}
-
-			div.ticketEntry.even div.status p{
-				transform: rotate(1.5deg);
-			}
-
-			div.ticketEntry.odd div.status p{
-				transform: rotate(-1.5deg);
-			}
-
-
-			div.status p.unassigned{
-				background: #ff7f2a;
-			}
-
-			div.status p.assigned{
-				background: #0191C5;
-			}
-
-			div.status p.closed{
-				background: rgb(1,145,19);
-			}
-
-			div.description{
-				flex: 1;
-				text-align: left;
-			}
-
-			div.description p{
-				margin: 3px;
-				text-overflow: ellipsis;
-			}
-
-			div.description p.description{
-				font-weight: bold;
-			}
-
-			div.description p.comment{
-				font-size: 0.9em;
-				margin-left: 20px;
-			}
-
-			div.description p.details{
-				font-size: 0.8em;
-				color: #444;
-			}
-
-			div.type{
-				width: 60px;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-
-			div.type img{
-				height: 40px;
-			}
-
-			div.actions{
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-
-			@media screen and (orientation: portrait){
-				div.status span{
-					display: none;
-				}
-				div.status.edit, .edit{
-					display: none;
-				}
-				div.actions.edit{
-					flex: 1;
-				}
-
-			}
-
-		</style>
-
-		<template repeat="{{ticket, i in tickets}}">
-			<div class="ticketEntry {{i%2 === 0 ? 'even' : 'odd'}}">
+		<template is="dom-repeat" items="{{tickets}}" as="ticket" index-as="i">
+			<div class="{{computeClass(i)}}">
 				<div class="type">
-					<template if="{{icon}}">
-						<img src="{{icon}}" />
+					<template is="dom-if" if="{{icon}}">
+						<img src="{{icon}}">
 					</template>
-					<template if="{{!icon}}">
-						<img src="{{path}}/types/{{ticket.type}}.png" /></div>
+					<template is="dom-if" if="{{computeIf(icon)}}">
+						<img src="{{computeSrc(path, ticket)}}">
 					</template>
 				</div>
-				<div class="status {{ticket.edit?'edit':''}}"><p class="{{ticket.status}}">{{frenchify(ticket.status)}}</p></div>
-				<div class="description {{ticket.edit?'edit':''}}">
+				<div class="{{computeClass(ticket)}}"><p class="{{ticket.status}}">{{frenchify(ticket.status)}}</p></div>
+				<div class="{{computeClass(ticket)}}">
 					<p class="description">{{ticket.description}}</p>
 					<p class="comment">{{ticket.comment}}</p>
-					<p class="details">#{{ticket.id}} : created by {{ticket.from}}{{ticket.assignedTo ? ', assigned to : '+ticket.assignedTo : ''}}</p>
+					<p class="details">#<span>{{ticket.id}}</span> : created by <span>{{ticket.from}}</span>{{computeExpression6(ticket)}}</p>
 				</div>
-				<div class="actions {{ticket.edit?'edit':''}}">
-					<template if="{{ticket.status === 'unassigned'}}">
-						<template if="{{!ticket.edit}}">
-							<paper-fab mini icon="perm-identity" style="background: #ff7f2a" ticket-id="{{i}}" on-tap="{{actionEditAssign}}"></paper-fab>
+				<div class="{{computeClass(ticket)}}">
+					<template is="dom-if" if="{{computeIf(ticket)}}">
+						<template is="dom-if" if="{{computeIf(ticket)}}">
+							<paper-fab mini="" icon="perm-identity" style="background: #ff7f2a" ticket-id="{{i}}" on-tap="{{actionEditAssign}}"></paper-fab>
 						</template>
-						<template if="{{ticket.edit}}">
-							<paper-input flex label="assign to..."></paper-input>
-							<paper-fab mini icon="clear" ticket-id="{{i}}" on-tap="{{actionCancelEdit}}"></paper-fab>
-							<paper-fab mini icon="arrow-forward" style="background: #0191C5" ticket-id="{{i}}" on-tap="{{actionAssign}}"></paper-fab>
-						</template>
-					</template>
-					<template if="{{ticket.status === 'assigned'}}">
-						<template if="{{!ticket.edit}}">
-							<paper-fab mini icon="check" style="background: rgb(1,145,19)" ticket-id="{{i}}" on-tap="{{actionEditClose}}"></paper-fab>
-						</template>
-						<template if="{{ticket.edit}}">
-							<paper-input flex label="comment..."></paper-input>
-							<paper-fab mini icon="clear" ticket-id="{{i}}" on-tap="{{actionCancelEdit}}"></paper-fab>
-							<paper-fab mini icon="arrow-forward" style="background: #0191C5" ticket-id="{{i}}" on-tap="{{actionClose}}"></paper-fab>
+						<template is="dom-if" if="{{ticket.edit}}">
+							<paper-input flex="" label="assign to..."></paper-input>
+							<paper-fab mini="" icon="clear" ticket-id="{{i}}" on-tap="{{actionCancelEdit}}"></paper-fab>
+							<paper-fab mini="" icon="arrow-forward" style="background: #0191C5" ticket-id="{{i}}" on-tap="{{actionAssign}}"></paper-fab>
 						</template>
 					</template>
-					<template if="{{ticket.status === 'closed'}}">
-						<paper-fab mini icon="clear" ticket-id="{{i}}" on-tap="{{actionDelete}}"></paper-fab>
+					<template is="dom-if" if="{{computeIf(ticket)}}">
+						<template is="dom-if" if="{{computeIf(ticket)}}">
+							<paper-fab mini="" icon="check" style="background: rgb(1,145,19)" ticket-id="{{i}}" on-tap="{{actionEditClose}}"></paper-fab>
+						</template>
+						<template is="dom-if" if="{{ticket.edit}}">
+							<paper-input flex="" label="comment..."></paper-input>
+							<paper-fab mini="" icon="clear" ticket-id="{{i}}" on-tap="{{actionCancelEdit}}"></paper-fab>
+							<paper-fab mini="" icon="arrow-forward" style="background: #0191C5" ticket-id="{{i}}" on-tap="{{actionClose}}"></paper-fab>
+						</template>
+					</template>
+					<template is="dom-if" if="{{computeIf(ticket)}}">
+						<paper-fab mini="" icon="clear" ticket-id="{{i}}" on-tap="{{actionDelete}}"></paper-fab>
 					</template>
 				</div>
 			</div>
@@ -177,172 +172,229 @@
 
 
 	</template>
+</dom-module>
 
-	<script>
-		Polymer({
-			ready: function(){
-				this.tickets = [];
-				this.path = this.resolvePath(".");
-			},
+<script>
+Polymer({
+	is: 'tickets-viewer',
+	properties: {
+		icon: { notify: true },
+		limit: { notify: true },
+		selector: {
+	 	       notify: true,
+	 	       observer: 'selectorChanged'
+      		}
+	},
 
-			addTicket: function(ticket){
-				for(var i=0; i<this.tickets.length; i++){
-					//if ticket already exists, update it
-					if(this.tickets[i].id === ticket.id){
-						this.tickets[i].from = ticket.from;
-						this.tickets[i].assignedTo = ticket.assignedTo;
-						this.tickets[i].type = ticket.type;
-						this.tickets[i].description = ticket.description;
-						this.tickets[i].comment = ticket.comment;
-						this.tickets[i].status = ticket.status;
-						this.tickets[i].edit = false;
-
-						return ;
-					}
-				}
-				//otherwise add it
-				ticket.edit = false;
-				this.tickets.push(ticket);
-
-				// quick hack to limits ticket number
-				if (this.tickets.length > this.limit) {
-					this.tickets.shift();
-				}
-			},
-
-			removeTicket: function(ticket){
-				for(var i=0; i<this.tickets.length; i++){
-					if(this.tickets[i].id === ticket.id){
-						this.tickets.splice(i, 1);
-						return ;
-					}
-				}
-			},
-
-			selectorChanged: function(){
-				var that = this;
-
-				if(this.selector){
-
-					console.log(this.selector);
-
-					d1(this.selector).subscribe({
-						service: 'ticketing',
-						func: 'ListenTickets'
-					},
-					function(peerId, err, data){
-
-						console.log(peerId);
-						console.log(err);
-						console.log(data);
-
-						if(err){
-							console.log(err);
-						}
-						else if(data && data.evt){
-							if(data.evt === 'Tickets' && data.tickets){
-								data.tickets.forEach(function(ticket){
-									that.addTicket(ticket);
-								});
-							}
-							else if(data.evt === 'TicketUpdated' && data.ticket){
-								that.addTicket(data.ticket);
-							}else if(data.evt === 'TicketDeleted' && data.ticket){
-								that.removeTicket(data.ticket);
-							}
-						}
-					}, {auto: true});
-				}
-			},
-
-
-			actionEditAssign: function(evt){
-				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
-				var ticket = this.tickets[ticketId];
-				if(ticket) ticket.edit = true;
-			},
-
-			actionAssign: function(evt){
-				var assignedTo = evt.target.parentNode.querySelector('paper-input').value;
-				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
-				var ticket = this.tickets[ticketId];
-				if(!ticket) return ;
-
-				d1(this.selector).request({
-					service: 'ticketing',
-					func: 'AssignTicket',
-					data: {
-						id: ticket.id,
-						assignedTo: assignedTo
-					}
-				},
-				function(peerId, err, data){
-					console.log(peerId);
-					console.log(err);
-					console.log(data);
-				});
-			},
-
-			actionEditClose: function(evt){
-				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
-				var ticket = this.tickets[ticketId];
-				if(ticket) ticket.edit = true;
-			},
-
-			actionClose: function(evt){
-				var comment = evt.target.parentNode.querySelector('paper-input').value;
-				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
-				var ticket = this.tickets[ticketId];
-				if(!ticket) return ;
-
-				d1(this.selector).request({
-					service: 'ticketing',
-					func: 'CloseTicket',
-					data: {
-						id: ticket.id,
-						comment: comment
-					}
-				},
-				function(peerId, err, data){
-					console.log(peerId);
-					console.log(err);
-					console.log(data);
-				});
-			},
-
-			actionCancelEdit: function(evt){
-				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
-				var ticket = this.tickets[ticketId];
-				if(ticket) ticket.edit = false;
-			},
-
-			actionDelete: function(evt){
-				var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
-				var ticket = this.tickets[ticketId];
-				if(!ticket) return ;
-
-				d1(this.selector).request({
-					service: 'ticketing',
-					func: 'DeleteTicket',
-					data: {
-						id: ticket.id
-					}
-				},
-				function(peerId, err, data){
-					console.log(peerId);
-					console.log(err);
-					console.log(data);
-				});
-			},
-
-			frenchify: function(status){
-				switch(status){
-					case "unassigned": return "ouvert";
-					case "assigned": return "assigné";
-					case "closed": return "fermé";
-				}
+	ready: function () {
+		this.tickets = [];
+		this.path = this.resolveUrl('.');
+	},
+	
+	addTicket: function (ticket) {
+		for (var i = 0; i < this.tickets.length; i++) {
+			//if ticket already exists, update it
+        		if (this.tickets[i].id === ticket.id) {
+          			this.tickets[i].from = ticket.from;
+          			this.tickets[i].assignedTo = ticket.assignedTo;
+			        this.tickets[i].type = ticket.type;
+				this.tickets[i].description = ticket.description;
+				this.tickets[i].comment = ticket.comment;
+				this.tickets[i].status = ticket.status;
+			        this.tickets[i].edit = false;
+          			return;
+        		}
+		}  //otherwise add it
+      
+		//otherwise add it
+		ticket.edit = false;
+		this.tickets.push(ticket);  // quick hack to limits ticket number
+		// quick hack to limits ticket number
+		if (this.tickets.length > this.limit) {
+			this.tickets.shift();
+		}
+	},
+	
+	removeTicket: function (ticket) {
+		for (var i = 0; i < this.tickets.length; i++) {
+			if (this.tickets[i].id === ticket.id) {
+				this.tickets.splice(i, 1);
+				return;
 			}
+		}
+	},
 
+	selectorChanged: function () {
+		var that = this;
+		if (this.selector) {
+			console.log(this.selector);
+			d1(this.selector).subscribe({
+				service: 'ticketing',
+				func: 'ListenTickets'
+			}, function (peerId, err, data) {
+				console.log(peerId);
+				console.log(err);
+				console.log(data);
+          			
+				if (err) {
+            				console.log(err);
+          			} else if (data && data.evt) {
+           				 if (data.evt === 'Tickets' && data.tickets) {
+             					data.tickets.forEach(function (ticket) {
+				                	that.addTicket(ticket);
+              					});
+            				} else if (data.evt === 'TicketUpdated' && data.ticket) {
+				              that.addTicket(data.ticket);
+					} else if (data.evt === 'TicketDeleted' && data.ticket) {
+				              that.removeTicket(data.ticket);
+            				}
+				}
+        		}, { auto: true });
+		}
+	},
+
+			 
+	actionEditAssign: function (evt) {
+		var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+		var ticket = this.tickets[ticketId];
+		
+		if (ticket)
+			ticket.edit = true;
+	},
+
+	actionAssign: function (evt) {
+		var assignedTo = evt.target.parentNode.querySelector('paper-input').value;
+		var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+		var ticket = this.tickets[ticketId];
+		
+		if (!ticket)
+			return;
+      
+		d1(this.selector).request({
+			service: 'ticketing',
+		        func: 'AssignTicket',
+		        data: {
+				id: ticket.id,
+				assignedTo: assignedTo
+			}
+		}, function (peerId, err, data) {
+			console.log(peerId);
+			console.log(err);
+			console.log(data);
+      		});
+	},
+
+	actionEditClose: function (evt) {
+		var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+		var ticket = this.tickets[ticketId];
+		if (ticket)
+			ticket.edit = true;
+	},
+			 
+	actionClose: function (evt) {
+		var comment = evt.target.parentNode.querySelector('paper-input').value;
+		var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+		var ticket = this.tickets[ticketId];
+		
+		if (!ticket)
+			return;
+
+		d1(this.selector).request({
+			service: 'ticketing',
+        		func: 'CloseTicket',
+        		data: {
+          			id: ticket.id,
+			          comment: comment
+        		}
+      		}, function (peerId, err, data) {
+			console.log(peerId);
+			console.log(err);
+			console.log(data);
 		});
-	</script>
-</polymer-element>
+	},
+		     
+	actionCancelEdit: function (evt) {
+		var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+		var ticket = this.tickets[ticketId];
+		if (ticket)
+			ticket.edit = false;
+ 	},
+
+	actionDelete: function (evt) {
+		var ticketId = parseInt(evt.target.attributes['ticket-id'].value);
+		var ticket = this.tickets[ticketId];
+
+		if (!ticket)
+			return;
+      
+		d1(this.selector).request({
+			service: 'ticketing',
+			func: 'DeleteTicket',
+			data: { id: ticket.id }
+		}, function (peerId, err, data) {
+ 			console.log(peerId);
+		       	console.log(err);
+			console.log(data);
+ 		});
+	},
+
+	frenchify: function (status) {
+		switch (status) {
+			case 'unassigned':
+				return 'ouvert';
+			case 'assigned':
+				return 'assign\xE9';
+			case 'closed':
+			        return 'ferm\xE9';
+			}
+	},
+
+	computeClass: function (i) {
+		return 'ticketEntry ' + (i % 2 === 0 ? 'even' : 'odd');
+	},
+		      
+	computeIf: function (icon) {
+		return !icon;
+	},
+		   
+	computeClass: function (ticket) {
+		return 'status ' + (ticket.edit ? 'edit' : '');
+	},
+		      
+	computeClass: function (ticket) {
+		return 'description ' + (ticket.edit ? 'edit' : '');
+ 	},
+		      
+	computeClass: function (ticket) {
+		return 'actions ' + (ticket.edit ? 'edit' : '');
+	},
+		      
+	computeIf: function (ticket) {
+		return ticket.status === 'unassigned';
+	},
+		   
+	computeIf: function (ticket) {
+		return ticket.status === 'assigned';
+	},
+		   
+	computeIf: function (ticket) {
+		return ticket.status === 'closed';
+	},
+		   
+	computeSrc: function (path, ticket) {
+		return '' + path + '/types/' + ticket.type + '.png';
+	},
+		    
+	computeIf: function (ticket) {
+		return !ticket.edit;
+	},
+		   
+	computeIf: function (ticket) {
+		return !ticket.edit;
+	},
+
+	computeExpression6: function (ticket) {
+		return ticket.assignedTo ? ', assigned to : ' + ticket.assignedTo : '';
+	}
+});
+</script>
