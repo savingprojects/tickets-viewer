@@ -16,9 +16,9 @@
     "tests"
   ],
   "dependencies": {
-    "diya-sdk": "partnering/diya-sdk",
-    "polymer": "Polymer/polymer#0.5",
-    "paper-fab": "Polymer/paper-fab#0.5",
-    "core-icon": "Polymer/core-icon#0.5"
+    "diya-sdk": "partnering/diya-sdk#master",
+    "polymer": "Polymer/polymer#1.x.x",
+    "paper-fab": "PolymerElements/paper-fab#~1.0.3",
+    "iron-icon": "Polymer/core-icon#~1.0.5"
   }
 }
